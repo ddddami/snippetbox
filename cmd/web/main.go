@@ -66,10 +66,13 @@ func main() {
 	}
 
 	srv := &http.Server{
-		Addr:      *addr,
-		Handler:   app.routes(),
-		ErrorLog:  slog.NewLogLogger(logger.Handler(), slog.LevelError), // convert structured logger to legacy logger. This is what http.Server expects
-		TLSConfig: tlsConfig,
+		Addr:         *addr,
+		Handler:      app.routes(),
+		ErrorLog:     slog.NewLogLogger(logger.Handler(), slog.LevelError), // convert structured logger to legacy logger. This is what http.Server expects
+		TLSConfig:    tlsConfig,
+		IdleTimeout:  time.Minute,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
 	}
 
 	logger.Info("starting server", "addr", *addr)
