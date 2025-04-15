@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"database/sql"
 	"flag"
 	"html/template"
@@ -60,13 +61,18 @@ func main() {
 		sessionManager: sessionManager,
 	}
 
-	logger.Info("starting server", "addr", *addr)
+	tlsConfig := &tls.Config{
+		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256},
+	}
 
 	srv := &http.Server{
-		Addr:     *addr,
-		Handler:  app.routes(),
-		ErrorLog: slog.NewLogLogger(logger.Handler(), slog.LevelError), // convert structured logger to legacy logger. This is what http.Server expects
+		Addr:      *addr,
+		Handler:   app.routes(),
+		ErrorLog:  slog.NewLogLogger(logger.Handler(), slog.LevelError), // convert structured logger to legacy logger. This is what http.Server expects
+		TLSConfig: tlsConfig,
 	}
+
+	logger.Info("starting server", "addr", *addr)
 
 	err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
 
