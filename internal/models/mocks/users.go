@@ -1,6 +1,10 @@
 package mocks
 
-import "snippetbox.damilola.dev/internal/models"
+import (
+	"time"
+
+	"snippetbox.damilola.dev/internal/models"
+)
 
 type UserModel struct{}
 
@@ -27,5 +31,19 @@ func (m *UserModel) Exists(id int) (bool, error) {
 		return true, nil
 	default:
 		return false, nil
+	}
+}
+
+func (m *UserModel) Get(id int) (models.User, error) {
+	if id == 1 {
+		u := models.User{
+			ID:      1,
+			Name:    "Dami",
+			Email:   "damilola@me.com",
+			Created: time.Now(),
+		}
+		return u, nil
+	} else {
+		return models.User{}, models.ErrNoRecord
 	}
 }
