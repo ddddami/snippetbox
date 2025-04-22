@@ -208,7 +208,8 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.sessionManager.Put(r.Context(), "authenticatedUserID", id)
-	http.Redirect(w, r, "/snippet/create", http.StatusSeeOther)
+	redirectPath := app.sessionManager.PopString(r.Context(), "redirectPathAfterLogin")
+	http.Redirect(w, r, redirectPath, http.StatusSeeOther)
 }
 
 func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
@@ -241,5 +242,4 @@ func (app *application) accountView(w http.ResponseWriter, r *http.Request) {
 
 	app.render(w, r, "account.tmpl", http.StatusOK, data)
 
-	fmt.Fprintf(w, "%+v", user)
 }
